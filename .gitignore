@@ -78,3 +78,8 @@ app-example/
 mobile/.expo/
 mobile/node_modules/
 backend/node_modules/
+
+.env
+.env.*
+mobile/.env
+
