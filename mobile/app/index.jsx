@@ -1,6 +1,5 @@
 import { Text, View, StyleSheet } from "react-native";
 import { Link } from "expo-router";
-import { Image } from "expo-image";  // This is fine if you plan to use Image later
 
 export default function Index() {
   return (
