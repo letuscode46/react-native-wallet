@@ -1,6 +1,11 @@
+// react custom hook file
+
 import { useCallback, useState } from "react";
-import NetInfo from "@react-native-community/netinfo";
+import { Alert } from "react-native";
 import { API_URL } from "../constants/api";
+
+// const API_URL = "https://wallet-api-cxqp.onrender.com/api";
+// const API_URL = "http://localhost:5001/api";
 
 export const useTransactions = (userId) => {
     const [transactions, setTransactions] = useState([]);
@@ -10,62 +15,25 @@ export const useTransactions = (userId) => {
         expenses: 0,
     });
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
 
+    // useCallback is used for performance reasons, it will memoize the function
     const fetchTransactions = useCallback(async () => {
         try {
-            const state = await NetInfo.fetch();
-            if (!state.isConnected) {
-                throw new Error("No internet connection");
-            }
-            const response = await fetch(`${API_URL}/transactions/${userId}`);
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Failed to fetch transactions: ${response.status} ${response.statusText} - ${errorText}`);
-            }
-            const data = await response.json();
-            setTransactions(Array.isArray(data) ? data : []);
-            setError(null);
+        const response = await fetch(`${API_URL}/transactions/${userId}`);
+        const data = await response.json();
+        setTransactions(data);
         } catch (error) {
-            console.error("Error fetching transactions:", {
-                message: error.message,
-                userId,
-                apiUrl: `${API_URL}/transactions/${userId}`,
-            });
-            setError(error.message || "Failed to fetch transactions");
-            setTransactions([]);
+        console.error("Error fetching transactions:", error);
         }
     }, [userId]);
 
     const fetchSummary = useCallback(async () => {
         try {
-            const state = await NetInfo.fetch();
-            if (!state.isConnected) {
-                throw new Error("No internet connection");
-            }
-            const response = await fetch(`${API_URL}/transactions/summary/${userId}`);
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Failed to fetch summary: ${response.status} ${response.statusText} - ${errorText}`);
-            }
-            const data = await response.json();
-            if (!data || typeof data !== "object") {
-                throw new Error("Invalid summary data received");
-            }
-            setSummary({
-                balance: Number(data.balance) || 0,
-                income: Number(data.income) || 0,
-                expenses: Number(data.expenses) || 0,
-            });
-            setError(null);
+        const response = await fetch(`${API_URL}/transactions/summary/${userId}`);
+        const data = await response.json();
+        setSummary(data);
         } catch (error) {
-            console.error("Error fetching summary:", {
-                message: error.message,
-                userId,
-                apiUrl: `${API_URL}/transactions/summary/${userId}`,
-            });
-            setError(error.message || "Failed to fetch summary");
-            setSummary({ balance: 0, income: 0, expenses: 0 });
+        console.error("Error fetching summary:", error);
         }
     }, [userId]);
 
@@ -73,37 +41,29 @@ export const useTransactions = (userId) => {
         if (!userId) return;
 
         setIsLoading(true);
-        setError(null);
         try {
-            await fetchTransactions();
-            await fetchSummary();
+        // can be run in parallel
+        await Promise.all([fetchTransactions(), fetchSummary()]);
         } catch (error) {
-            console.error("Error loading data:", error);
-            setError(error.message || "Failed to load data");
+        console.error("Error loading data:", error);
         } finally {
-            setIsLoading(false);
+        setIsLoading(false);
         }
     }, [fetchTransactions, fetchSummary, userId]);
 
     const deleteTransaction = async (id) => {
         try {
-            const state = await NetInfo.fetch();
-            if (!state.isConnected) {
-                throw new Error("No internet connection");
-            }
-            const response = await fetch(`${API_URL}/transactions/${id}`, { method: "DELETE" });
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Failed to delete transaction: ${response.status} ${response.statusText} - ${errorText}`);
-            }
-            await loadData();
-            setError(null);
+        const response = await fetch(`${API_URL}/transactions/${id}`, { method: "DELETE" });
+        if (!response.ok) throw new Error("Failed to delete transaction");
+
+        // Refresh data after deletion
+        loadData();
+        Alert.alert("Success", "Transaction deleted successfully");
         } catch (error) {
-            console.error("Error deleting transaction:", error);
-            setError(error.message);
-            throw error;
+        console.error("Error deleting transaction:", error);
+        Alert.alert("Error", error.message);
         }
     };
 
-    return { transactions, summary, isLoading, error, loadData, deleteTransaction };
+    return { transactions, summary, isLoading, loadData, deleteTransaction };
 };
