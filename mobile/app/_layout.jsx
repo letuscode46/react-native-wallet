@@ -1,19 +1,14 @@
 import { Slot } from "expo-router";
 import SafeScreen from "../components/SafeScreen";
-import { ClerkProvider } from '@clerk/clerk-expo'
-
+import { ClerkProvider } from "@clerk/clerk-expo";
+import { tokenCache } from "@clerk/clerk-expo/token-cache";
 
 export default function RootLayout() {
   return (
-      <ClerkProvider>
-            <SafeScreen>
-
-
-            </SafeScreen>
-
+    <ClerkProvider tokenCache={tokenCache}>
+      <SafeScreen>
         <Slot />
-
-      </ClerkProvider>
-
+      </SafeScreen>
+    </ClerkProvider>
   );
 }

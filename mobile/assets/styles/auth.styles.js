@@ -10,9 +10,8 @@ export const styles = StyleSheet.create({
         justifyContent: "center",
     },
     illustration: {
-        width: "100%",
+        width: 300,
         height: 310,
-        resizeMode: "contain",
     },
     title: {
         fontSize: 32,
@@ -51,7 +50,6 @@ export const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        gap: 8,
     },
     footerText: {
         color: COLORS.text,
@@ -61,6 +59,7 @@ export const styles = StyleSheet.create({
         color: COLORS.primary,
         fontSize: 16,
         fontWeight: "600",
+        marginLeft: 8, // replaces 'gap'
     },
     verificationContainer: {
         flex: 1,
@@ -89,10 +88,8 @@ export const styles = StyleSheet.create({
         textAlign: "center",
         letterSpacing: 2,
     },
-
-    // 🔴 Error styles
     errorBox: {
-        backgroundColor: "#FFE5E5",
+        backgroundColor: COLORS.errorBackground || "#FFE5E5",
         padding: 12,
         borderRadius: 8,
         borderLeftWidth: 4,
