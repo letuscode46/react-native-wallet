@@ -38,28 +38,28 @@ export const useTransactions = (userId) => {
 
         setIsLoading(true);
         try {
-            // await Promise.all([fetchTransactions(), fetchSummary()]);
-            await fetchTransactions()
-            await fetchSummary()
+        // can be run in parallel
+        await Promise.all([fetchTransactions(), fetchSummary()]);
         } catch (error) {
-            console.error("Error loading data:", error);
+        console.error("Error loading data:", error);
         } finally {
-            setIsLoading(false);
+        setIsLoading(false);
         }
-        }, [fetchTransactions, fetchSummary, userId]);
+    }, [fetchTransactions, fetchSummary, userId]);
+
     const deleteTransaction = async (id) => {
-    try {
+        try {
         const response = await fetch(`${API_URL}/transactions/${id}`, { method: "DELETE" });
         if (!response.ok) throw new Error("Failed to delete transaction");
 
         // Refresh data after deletion
         loadData();
         Alert.alert("Success", "Transaction deleted successfully");
-    } catch (error) {
+        } catch (error) {
         console.error("Error deleting transaction:", error);
         Alert.alert("Error", error.message);
-    }
+        }
     };
 
-    return { transactions, summary, isLoading, loadData, deleteTransaction} ;
+    return { transactions, summary, isLoading, loadData, deleteTransaction };
 };
