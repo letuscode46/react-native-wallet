@@ -66,4 +66,4 @@ export const useTransactions = (userId) => {
     };
 
     return { transactions, summary, isLoading, loadData, deleteTransaction };
-};
+    };

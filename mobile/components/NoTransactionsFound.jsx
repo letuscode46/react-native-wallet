@@ -5,7 +5,7 @@ import { COLORS } from "../constants/colors";
 import { useRouter } from "expo-router";
 
 const NoTransactionsFound = () => {
-  const router = useRouter();
+    const router = useRouter();
 
     return (
         <View style={styles.emptyState}>
