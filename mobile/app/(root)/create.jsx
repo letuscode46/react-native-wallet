@@ -1,10 +1,10 @@
 import {
-  View,
-  Text,
-  Alert,
-  TouchableOpacity,
-  TextInput,
-  ActivityIndicator,
+    View,
+    Text,
+    Alert,
+    TouchableOpacity,
+    TextInput,
+    ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useUser } from "@clerk/clerk-expo";
